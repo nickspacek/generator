@@ -1,15 +1,18 @@
 A Schema!
 
-{% for server in asyncapi.servers %}
+Servers: {{ asyncapi.servers() }}
+
+{% for server in asyncapi.servers() %}
 server: {{ server.url }}
 {% endfor %}
 
-Schema name: {{ SchemaName }}
+Schema name: {{ schemaName }}
 
-Type: {{ schema.type }}
+Type: {{ schema.type() }}
 
-Properties:
-{% for prop in schema.properties %}
+Properties: {{ schema.properties() }}
+
+{% for prop in schema.properties() %}
 
 Prop: {{ prop }}
 
