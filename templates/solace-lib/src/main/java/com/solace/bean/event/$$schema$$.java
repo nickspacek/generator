@@ -1,4 +1,4 @@
-package com.solace.event;
+package com.solace.bean.event;
 
 public class {{ schemaName }} { 
 {% for name, prop in schema.properties() -%}
