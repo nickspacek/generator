@@ -3,9 +3,9 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>com.solace</groupId>
-	<artifactId>solace-beans-gen</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<groupId>{{ asyncapi.info().extensions()['x-maven-group-id'] }}</groupId>
+	<artifactId>{{ asyncapi.info() | artifactId }}</artifactId>
+	<version>{{ asyncapi.info().version() }}</version>
 	<packaging>jar</packaging>
 
 	<name>solace-beans</name>
