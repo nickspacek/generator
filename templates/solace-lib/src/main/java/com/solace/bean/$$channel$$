@@ -1,9 +1,8 @@
-{#
+{#-
 {{ channel.json() | dump }}
 #}
-{% set topicInfo = [channelName, channel] | topicInfo %}
-
-{% set className = channel.json()['x-class-name'] %}
+{%- set topicInfo = [channelName, channel] | topicInfo %}
+{% set className = channel.json()['x-class-name'] -%}
 package com.solace.bean;
 
 import javax.annotation.PostConstruct;
@@ -26,39 +25,46 @@ public class {{ className }} {
     private static final String PUBLISH_TOPIC = "{{ topicInfo.publishTopic }}";
     private static final String SUBSCRIBE_TOPIC = "{{ topicInfo.subscribeTopic }}";
 
-	@Autowired
-	private SolaceSession solaceSession;
+    @Autowired
+    private SolaceSession solaceSession;
 
-	private ObjectMapper mapper = new ObjectMapper();
-	private TextMessage textMessage = JCSMPFactory.onlyInstance().createMessage(TextMessage.class);
+    private ObjectMapper mapper = new ObjectMapper();
+    private TextMessage textMessage = JCSMPFactory.onlyInstance().createMessage(TextMessage.class);
 
-	private XMLMessageProducer producer;
+    private XMLMessageProducer producer;
 
-	@PostConstruct
-	public void init() throws Exception {
-		JCSMPSession session = solaceSession.getSession();
-		producer = session.getMessageProducer(new PublishEventHandler());
-	}
+    @PostConstruct
+    public void init() throws Exception {
+        JCSMPSession session = solaceSession.getSession();
+        producer = session.getMessageProducer(new PublishEventHandler());
+    }
 
-    private String formatTopic( {%- for ... -%} ) {
-        String ret = String.format(PUBLISH_TOPIC, {% for ... %} );
-        return ret;
+    private Topic formatTopic({{ topicInfo.functionParamList }}) {
+        String topicString = String.format(PUBLISH_TOPIC, {{ topicInfo.functionArgList }} );
+        Topic topic = JCSMPFactory.onlyInstance().createTopic(topicString);
+        return topic;
     }
 
 {%- for schemaName, schema in asyncapi.components().schemas() %}
 {%- set lowerName = schemaName | lowerFirst %}
 
-	public void send({{ schemaName }} {{ lowerName}}, String topicName) throws Exception {
-		Topic topic = solaceSession.getTopic(topicName);
-		String payload = mapper.writeValueAsString({{ lowerName }});
-		textMessage.setText(payload);
-		producer.send(textMessage, topic);
-	}
-	
+    public void send{{ schemaName }}({{ schemaName }} {{ lowerName}}, {{ topicInfo.functionParamList }}) throws Exception {
+        Topic topic = formatTopic({{ topicInfo.functionArgList }});
+        String payload = mapper.writeValueAsString({{ lowerName }});
+        textMessage.setText(payload);
+        producer.send(textMessage, topic);
+    }
+    
  {% endfor %}
-	public void close() {
-		solaceSession.close();
-	}
+    public void close() {
+        solaceSession.close();
+    }
+
+{% for param in topicInfo.params %}
+{% if param.enum -%}
+    public static enum {{ param.type }} { {{ param.enum }} }
+{% endif %}
+{% endfor -%}
 
 }
 
