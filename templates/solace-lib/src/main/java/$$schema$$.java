@@ -1,4 +1,4 @@
-package com.solace.bean.event;
+{% include '.partials/java-package' -%}
 
 public class {{ schemaName }} { 
 {% for name, prop in schema.properties() -%}

@@ -1,0 +1,4 @@
+{% if  asyncapi.info().extensions()['x-java-package'] %}
+package {{ asyncapi.info().extensions()['x-java-package'] }};
+{% endif -%}
+

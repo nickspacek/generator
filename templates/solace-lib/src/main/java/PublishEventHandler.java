@@ -1,4 +1,4 @@
-package com.solace.bean;
+{% include '.partials/java-package' -%}
 
 import com.solacesystems.jcsmp.JCSMPException;
 import com.solacesystems.jcsmp.JCSMPStreamingPublishEventHandler;

@@ -1,4 +1,4 @@
-package com.solace.bean;
+{% include '.partials/java-package' -%}
 
 import java.util.HashMap;
 
