@@ -8,31 +8,30 @@ module.exports = register => {
     var asyncapi = generator.asyncapi
     var sourcePath = generator.targetDir + sourceHead
     var info = asyncapi.info()
-    console.log('dumping.....')
-    dump(info)
-    console.log('dumping.....')
+    var package = generator.templateParams['java-package']
 
-    if (info) {
+    if (!package && info) {
         var extensions = info.extensions()
         if (extensions) {
-            var package = extensions['x-java-package']
-            if (package) {
-                console.log("package: " + package)
-                var overridePath = generator.targetDir + sourceHead + package.replace(/\./g, '/') + '/'
-                console.log("Moving from " + sourcePath + " to " + overridePath)
-                var first = true
-                fs.readdirSync(sourcePath).forEach( file => {
-                    if (first) {
-                        first = false
-                        fs.mkdirSync(overridePath, { recursive: true })
-                    }
-                    console.log("file: " + file)
-                    fs.copyFileSync(path.resolve(sourcePath, file), path.resolve(overridePath, file))
-                    fs.unlinkSync(path.resolve(sourcePath, file))
-                })
-                sourcePath = overridePath
-            }
+            package =  extensions['x-java-package']
         }
+    }
+
+    if (package) {
+        console.log("package: " + package)
+        var overridePath = generator.targetDir + sourceHead + package.replace(/\./g, '/') + '/'
+        console.log("Moving from " + sourcePath + " to " + overridePath)
+        var first = true
+        fs.readdirSync(sourcePath).forEach( file => {
+            if (first) {
+                first = false
+                fs.mkdirSync(overridePath, { recursive: true })
+            }
+            console.log("file: " + file)
+            fs.copyFileSync(path.resolve(sourcePath, file), path.resolve(overridePath, file))
+            fs.unlinkSync(path.resolve(sourcePath, file))
+        })
+        sourcePath = overridePath
     }
 
     for (name in asyncapi.channels()) {

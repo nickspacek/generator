@@ -9,14 +9,28 @@ module.exports = ({ Nunjucks, _ }) => {
   formatMap.set('enum', '%s')
   formatMap.set('integer', '%d')
 
-  Nunjucks.addFilter('artifactId', (info) => {
+  Nunjucks.addFilter('groupId', ([info, params]) => {
     var ret = ''
-    if ( info.extensions()['x-maven-artifact-id'] ) {
+    if ( params['maven-group-id'] ) {
+        ret = params['maven-group-id']
+    } else if ( info.extensions()['x-maven-group-id'] ) {
+        ret = info.extensions()['x-maven-group-id']
+    } else {
+        throw new Error("Can't determine the maven group id. Please set the param maven-group-id or element info.x-maven-group-id.")
+    }
+    return ret
+  })
+
+  Nunjucks.addFilter('artifactId', ([info, params]) => {
+    var ret = ''
+    if ( params['maven-artifact-id'] ) {
+        ret = params['maven-artifact-id']
+    } else if ( info.extensions()['x-maven-artifact-id'] ) {
         ret = info.extensions()['x-maven-artifact-id']
     } else if ( info.title() ) {
         ret = _.kebabCase(info.title())
     } else {
-        throw new Error("Can't determine the maven artifact id. Please set info.title or info.x-maven-artifact-id.")
+        throw new Error("Can't determine the maven artifact id. Please set the param maven-artifact-id, or element info.title or info.x-maven-artifact-id.")
     }
     return ret
   })

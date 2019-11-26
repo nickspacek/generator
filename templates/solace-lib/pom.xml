@@ -3,8 +3,8 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>{{ asyncapi.info().extensions()['x-maven-group-id'] }}</groupId>
-	<artifactId>{{ asyncapi.info() | artifactId }}</artifactId>
+	<groupId>{{ [asyncapi.info(), params] | groupId }}</groupId>
+	<artifactId>{{ [asyncapi.info(), params] | artifactId }}</artifactId>
 	<version>{{ asyncapi.info().version() }}</version>
 	<packaging>jar</packaging>
 
