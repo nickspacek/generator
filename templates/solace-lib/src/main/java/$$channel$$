@@ -1,5 +1,6 @@
 {%- set topicInfo = [channelName, channel] | topicInfo %}
 {% set className = channel.json()['x-java-class'] -%}
+{% set publishPayloadClassName = channel | publishPayload -%}
 {% include '.partials/java-package' -%}
 
 import javax.annotation.PostConstruct;

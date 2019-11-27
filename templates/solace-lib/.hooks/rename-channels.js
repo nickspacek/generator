@@ -18,7 +18,7 @@ module.exports = register => {
     }
 
     if (package) {
-        console.log("package: " + package)
+        //console.log("package: " + package)
         var overridePath = generator.targetDir + sourceHead + package.replace(/\./g, '/') + '/'
         console.log("Moving from " + sourcePath + " to " + overridePath)
         var first = true
@@ -27,7 +27,7 @@ module.exports = register => {
                 first = false
                 fs.mkdirSync(overridePath, { recursive: true })
             }
-            console.log("file: " + file)
+            //console.log("file: " + file)
             fs.copyFileSync(path.resolve(sourcePath, file), path.resolve(overridePath, file))
             fs.unlinkSync(path.resolve(sourcePath, file))
         })
@@ -38,8 +38,8 @@ module.exports = register => {
         var chan = asyncapi.channel(name)
         extensions = chan.extensions()
         var className = extensions['x-java-class']
-        console.log("renaming " + name + " to " + className)
         var newName = name.replace(/\//g, "-")
+        console.log("renaming " + newName + " to " + className)
         fs.renameSync(path.resolve(sourcePath, newName), path.resolve(sourcePath, className + ".java"))
     }
   })

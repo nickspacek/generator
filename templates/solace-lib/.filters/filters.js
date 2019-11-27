@@ -9,18 +9,6 @@ module.exports = ({ Nunjucks, _ }) => {
   formatMap.set('enum', '%s')
   formatMap.set('integer', '%d')
 
-  Nunjucks.addFilter('groupId', ([info, params]) => {
-    var ret = ''
-    if ( params['maven-group-id'] ) {
-        ret = params['maven-group-id']
-    } else if ( info.extensions()['x-maven-group-id'] ) {
-        ret = info.extensions()['x-maven-group-id']
-    } else {
-        throw new Error("Can't determine the maven group id. Please set the param maven-group-id or element info.x-maven-group-id.")
-    }
-    return ret
-  })
-
   Nunjucks.addFilter('artifactId', ([info, params]) => {
     var ret = ''
     if ( params['maven-artifact-id'] ) {
@@ -35,6 +23,36 @@ module.exports = ({ Nunjucks, _ }) => {
     return ret
   })
 
+  Nunjucks.addFilter('fixType', (str) => {
+    var ret = typeMap.get(str)
+    if (!ret) {
+        ret = str
+    }
+    return ret
+  })
+
+  Nunjucks.addFilter('groupId', ([info, params]) => {
+    var ret = ''
+    if ( params['maven-group-id'] ) {
+        ret = params['maven-group-id']
+    } else if ( info.extensions()['x-maven-group-id'] ) {
+        ret = info.extensions()['x-maven-group-id']
+    } else {
+        throw new Error("Can't determine the maven group id. Please set the param maven-group-id or element info.x-maven-group-id.")
+    }
+    return ret
+  })
+
+  Nunjucks.addFilter('publishPayload', (channel) => {
+    return payload(channel.publish())
+  })
+
+  function payload(pubOrSub) {
+    var ret
+    console.log(JSON.stringify(pubOrSub))
+    return ret
+  }
+
   Nunjucks.addFilter('topicInfo', ([channelName, channel]) => {
     var ret = {}
     var publishTopic = String(channelName)
@@ -44,11 +62,11 @@ module.exports = ({ Nunjucks, _ }) => {
     var functionArgList = ""
     var first = true
 
-    console.log("params: " + JSON.stringify(channel.parameters()))
+    //console.log("params: " + JSON.stringify(channel.parameters()))
     for (var name in channel.parameters()) {
         var nameWithBrackets = "{" + name + "}"
         var schema = channel.parameter(name)['_json']['schema']
-        console.log("schema: " + dump(schema))
+        //console.log("schema: " + dump(schema))
         var type = schema.type
         var param = { "name" : _.lowerFirst(name)  }
 
@@ -60,22 +78,22 @@ module.exports = ({ Nunjucks, _ }) => {
         }
 
         if (type) {
-            console.log("It's a type: " + type)
+            //console.log("It's a type: " + type)
             var javaType = typeMap.get(type)
             if (!javaType) throw new Error("topicInfo filter: type not found in typeMap: " + type)
             param.type = javaType
             var printfArg = formatMap.get(type)
-            console.log("printf: " + printfArg)
+            //console.log("printf: " + printfArg)
             if (!printfArg) throw new Error("topicInfo filter: type not found in formatMap: " + type)
-            console.log("Replacing " + nameWithBrackets)
+            //console.log("Replacing " + nameWithBrackets)
             publishTopic = publishTopic.replace(nameWithBrackets, printfArg)
         } else {
             var en = schema.enum
             if (en) {
-                console.log("It's an enum: " + en)
+                //console.log("It's an enum: " + en)
                 param.type = _.upperFirst(name)
                 param.enum = en
-                console.log("Replacing " + nameWithBrackets)
+                //console.log("Replacing " + nameWithBrackets)
                 publishTopic = publishTopic.replace(nameWithBrackets, "%s")
             } else {
                 throw new Error("topicInfo filter: Unknown parameter type: " + JSON.stringify(schema))
@@ -96,14 +114,7 @@ module.exports = ({ Nunjucks, _ }) => {
     return ret
   })
 
-  Nunjucks.addFilter('fixType', (str) => {
-    var ret = typeMap.get(str)
-    if (!ret) {
-        ret = str
-    }
-    return ret
-  })
-
+/*
   Nunjucks.addFilter('propNames', (schema) => {
     var ret = []
     for (var p in schema) {
@@ -111,10 +122,10 @@ module.exports = ({ Nunjucks, _ }) => {
     }
     return ret
   })
+*/
 
   function dump(obj) {
-    var s = ''
-    var p
+    var s = '' + typeof obj
     for (const p in obj) {
         s += " "
         s += p
