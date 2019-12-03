@@ -42,7 +42,8 @@
     "markdown-it": "^8.4.1",
     "minimatch": "^3.0.4",
     "nunjucks": "^3.2.0",
-    "openapi-sampler": "^1.0.0-beta.9"
+    "openapi-sampler": "^1.0.0-beta.9",
+    "quicktype-core": "^6.0.52"
   },
   "devDependencies": {
     "chokidar": "^3.3.0",
